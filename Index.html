@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2025 by anonymous (http://jsbin.com/caviwakoga/5/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홍길동's Recipe Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .recipe-header {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .serving-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background: #e8f4fd;
+            border-radius: 5px;
+        }
+        .serving-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .serving-btn:hover {
+            background: #2980b9;
+        }
+        .current-serving {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        .timer-section {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .timer-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .timer-input {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .timer-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .timer-btn:hover {
+            background: #d35400;
+        }
+        .timer-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #e67e22;
+        }
+        .steps-section {
+            margin: 20px 0;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .step.completed {
+            background: #d4edda;
+            border-left-color: #28a745;
+            opacity: 0.7;
+        }
+        .step-checkbox {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        .step-text {
+            flex: 1;
+        }
+        .step.completed .step-text {
+            text-decoration: line-through;
+        }
+        .save-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 5px;
+        }
+        .save-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .save-btn:hover {
+            background: #218838;
+        }
+        .source {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>홍길동's Recipe Book</h1>
+        
+        <div class="recipe-header">
+            <h2>Recipe #1 : 비빔밥</h2>
+            <p><strong>소요시간:</strong> 35분</p>
+            <p><strong>요리법:</strong> 볶음</p>
+        </div>
+
+        <div class="serving-control">
+            <span><strong>기준 인분:</strong></span>
+            <button class="serving-btn" onclick="changeServing(-1)">-</button>
+            <span class="current-serving"><span id="currentServing">2</span> 인분</span>
+            <button class="serving-btn" onclick="changeServing(1)">+</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>재료</th>
+                    <th>용량</th>
+                    <th>손질법</th>
+                </tr>
+            </thead>
+            <tbody id="ingredientTable">
+                <tr>
+                    <td>쌀</td>
+                    <td><span class="amount">2</span> 컵</td>
+                    <td>씻어서 취사</td>
+                </tr>
+                <tr>
+                    <td>당근</td>
+                    <td><span class="amount">1</span> 개</td>
+                    <td>채썰기</td>
+                </tr>
+                <tr>
+                    <td>시금치</td>
+                    <td><span class="amount">1</span> 단</td>
+                    <td>데쳐서 무치기</td>
+                </tr>
+                <tr>
+                    <td>고추장</td>
+                    <td><span class="amount">2</span> 큰술</td>
+                    <td>그대로 사용</td>
+                </tr>
+                <tr>
+                    <td>참기름</td>
+                    <td><span class="amount">1</span> 큰술</td>
+                    <td>그대로 사용</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="timer-section">
+            <h3>재료 준비</h3>
+            <div class="timer-controls">
+                <input type="number" id="timerInput" class="timer-input" value="300" min="1">
+                <span>초</span>
+                <button class="timer-btn" onclick="startTimer()">타이머 시작</button>
+                <button class="timer-btn" onclick="stopTimer()">정지</button>
+            </div>
+            <div class="timer-display" id="timerDisplay">00:00</div>
+        </div>
+
+        <div class="steps-section">
+            <h3>조리 단계</h3>
+            <div class="step" id="step1">
+                <input type="checkbox" class="step-checkbox" onchange="toggleStep(1, this)">
+                <span class="step-text">밥을 짓습니다.</span>
+            </div>
+            <div class="step" id="step2">
+                <input type="checkbox" class="step-checkbox" onchange="toggleStep(2, this)">
+                <span class="step-text">야채를 손질합니다.</span>
+            </div>
+            <div class="step" id="step3">
+                <input type="checkbox" class="step-checkbox" onchange="toggleStep(3, this)">
+                <span class="step-text">모든 재료를 그릇에 담습니다.</span>
+            </div>
+            <div class="step" id="step4">
+                <input type="checkbox" class="step-checkbox" onchange="toggleStep(4, this)">
+                <span class="step-text">고추장과 함께 비벼 먹습니다.</span>
+            </div>
+        </div>
+
+        <div class="save-section">
+            <button class="save-btn" onclick="saveRecipeData()">완료 표시하기</button>
+            <p><small>요리 완료 후 클릭하여 데이터를 저장하세요</small></p>
+        </div>
+
+        <div class="source">
+            <p><strong>Source:</strong> 만개의 레시피</p>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // 기본 레시피 기능
+        // =============================================
+        
+        let currentServing = 2;
+        const baseAmounts = [2, 1, 1, 2, 1]; // 기본 용량들
+        let timerInterval;
+        let timerSeconds = 0;
+        let isTimerRunning = false;
+
+        // 인분 수 변경
+        function changeServing(change) {
+            currentServing += change;
+            if (currentServing < 1) currentServing = 1;
+            if (currentServing > 10) currentServing = 10;
+            
+            document.getElementById('currentServing').textContent = currentServing;
+            updateIngredients();
+            
+            // 데이터 수집
+            logUserAction('serving_change', currentServing);
+        }
+
+        // 재료 용량 업데이트
+        function updateIngredients() {
+            const amounts = document.querySelectorAll('.amount');
+            amounts.forEach((amount, index) => {
+                if (index < baseAmounts.length) {
+                    amount.textContent = baseAmounts[index] * currentServing;
+                }
+            });
+        }
+
+        // 타이머 시작
+        function startTimer() {
+            if (isTimerRunning) return;
+            
+            timerSeconds = parseInt(document.getElementById('timerInput').value);
+            isTimerRunning = true;
+            
+            // 데이터 수집
+            logUserAction('timer_start', timerSeconds);
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    stopTimer();
+                    alert('타이머 완료!');
+                    logUserAction('timer_complete', 0);
+                }
+            }, 1000);
+        }
+
+        // 타이머 정지
+        function stopTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            
+            if (timerSeconds > 0) {
+                logUserAction('timer_stop', timerSeconds);
+            }
+        }
+
+        // 타이머 표시 업데이트
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 단계 완료 토글
+        function toggleStep(stepNumber, checkbox) {
+            const step = document.getElementById('step' + stepNumber);
+            
+            if (checkbox.checked) {
+                step.classList.add('completed');
+                logUserAction('step_complete', stepNumber);
+            } else {
+                step.classList.remove('completed');
+                logUserAction('step_uncomplete', stepNumber);
+            }
+        }
+
+        // =============================================
+        // 데이터 수집 기능 (간단 버전)
+        // =============================================
+        
+        // Google Apps Script URL (학생들이 설정)
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmo9WTmK4q4U7W4GalJx7xwaKuALtOdy-bQIKDNfy1nNFTtmeQCp32Rmeoa0pW3psWJA/exec';
+        
+        // 사용자 행동 로그
+        let userActions = [];
+        let sessionId = 'recipe_' + Date.now();
+        let startTime = Date.now();
+
+        // 사용자 행동 기록
+        function logUserAction(action, value) {
+            const actionData = {
+                time: new Date().toLocaleTimeString(),
+                action: action,
+                value: value,
+                timeFromStart: Math.round((Date.now() - startTime) / 1000) // 초 단위
+            };
+            
+            userActions.push(actionData);
+            console.log('기록된 행동:', actionData);
+        }
+
+        // 완료 데이터 저장
+        function saveRecipeData() {
+            // 완료된 단계 확인
+            const completedSteps = [];
+            for (let i = 1; i <= 4; i++) {
+                const checkbox = document.querySelector(`#step${i} .step-checkbox`);
+                if (checkbox.checked) {
+                    completedSteps.push(i);
+                }
+            }
+
+            // 저장할 데이터
+            const recipeData = {
+                sessionId: sessionId,
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                recipe: '비빔밥',
+                servings: currentServing,
+                completedSteps: completedSteps.length,
+                totalSteps: 4,
+                completionRate: Math.round((completedSteps.length / 4) * 100),
+                actions: userActions,
+                totalTime: Math.round((Date.now() - startTime) / 1000) // 총 사용 시간 (초)
+            };
+
+            // Google Sheets로 전송
+            sendToGoogleSheets(recipeData);
+            
+            logUserAction('recipe_complete', completedSteps.length);
+            alert('레시피 완료 데이터가 저장되었습니다!');
+        }
+
+        // Google Sheets로 데이터 전송
+        async function sendToGoogleSheets(data) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    mode: 'no-cors'
+                });
+                
+                console.log('데이터 전송 완료:', data);
+                
+            } catch (error) {
+                console.error('데이터 전송 실패:', error);
+                // 실패 시 브라우저 콘솔에 데이터 출력
+                console.log('저장할 데이터:', data);
+            }
+        }
+
+        // 페이지 로드 시 시작
+        window.onload = function() {
+            console.log('레시피 세션 시작:', sessionId);
+        };
+
+    </script>
+</body>
+</html>
